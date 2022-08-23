@@ -1,4 +1,5 @@
 import React from "react"
+import Image from 'next/image'
 import { ethers } from "ethers"
 import Web3Modal from "web3modal"
 import { ALCHEMY_API_KEY_URL, WHITELIST_CONTRACT_ADDRESS, abi } from "../constants"
@@ -107,11 +108,11 @@ export default function Home() {
             <div className={home.main}>
                 <div className={home.textContainer}>
                     <h1 className={home.h1}>Welcome to Crypto Devs !</h1>
-                    <div className={home.welcomeText}>it's an NFT collection for developers in Crypto.</div>
+                    <div className={home.welcomeText}>it&apos;s an NFT collection for developers in Crypto.</div>
                     <div className={home.welcomeText}>{numAddressesWhitelisted} have already joined the Whitelist</div>
                     {renderButton()}
                 </div>
-                <img className={home.imgCryptoDevs} src="./crypto-devs.svg" />
+                <Image className={home.imgCryptoDevs} alt="crypto-devs.svg" src="./crypto-devs.svg" />
             </div>
         </div>
 
