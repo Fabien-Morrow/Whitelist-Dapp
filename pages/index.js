@@ -5,6 +5,9 @@ import { ALCHEMY_API_KEY_URL, WHITELIST_CONTRACT_ADDRESS, abi } from "../constan
 
 import home from "../styles/Home.module.css"
 
+console.log("avec env : ", process.env.ALCHEMY_API_KEY_URL)
+const passiveProvider2 = new ethers.providers.JsonRpcProvider(process.env.ALCHEMY_API_KEY_URL);
+console.log(passiveProvider2)
 
 export default function Home() {
     const [addressState, setAddressState] = React.useState(new Set(["welcome"]))
@@ -83,7 +86,9 @@ export default function Home() {
             disableInjectedProvider: false,
         })
 
+        console.log("sans env : ", ALCHEMY_API_KEY_URL)
         const passiveProvider = new ethers.providers.JsonRpcProvider(ALCHEMY_API_KEY_URL);
+        console.log(passiveProvider)
         const whiteListContract = new ethers.Contract(WHITELIST_CONTRACT_ADDRESS, abi, passiveProvider)
 
         async function getNumAddressesWhitelisted(contract) {
