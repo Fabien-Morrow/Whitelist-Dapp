@@ -1,15 +1,20 @@
 import React from "react"
 import { ethers } from "ethers"
 import Web3Modal from "web3modal"
-import { ALCHEMY_API_KEY_URL, WHITELIST_CONTRACT_ADDRESS, abi } from "../constants"
+import { WHITELIST_CONTRACT_ADDRESS, abi } from "../constants"
 
 import home from "../styles/Home.module.css"
 
-console.log("avec env : ", process.env.ALCHEMY_API_KEY_URL)
-const passiveProvider2 = new ethers.providers.JsonRpcProvider(process.env.ALCHEMY_API_KEY_URL);
-console.log(passiveProvider2)
+export async function getServerSideProps() {
+    const passiveProvider = new ethers.providers.JsonRpcProvider(process.env.ALCHEMY_API_KEY_URL)
+    const whiteListContract = new ethers.Contract(WHITELIST_CONTRACT_ADDRESS, abi, passiveProvider)
+    const _numAddressesWhitelisted = await whiteListContract.numAddressesWhitelisted()
 
-export default function Home() {
+    return { props: { _numAddressesWhitelisted } }
+}
+
+
+export default function Home({ _numAddressesWhitelisted }) {
     const [addressState, setAddressState] = React.useState(new Set(["welcome"]))
     const [numAddressesWhitelisted, setNumAddressesWhitelisted] = React.useState()
 
@@ -86,24 +91,8 @@ export default function Home() {
             disableInjectedProvider: false,
         })
 
-        console.log("sans env : ", ALCHEMY_API_KEY_URL)
-        const passiveProvider = new ethers.providers.JsonRpcProvider(ALCHEMY_API_KEY_URL);
-        console.log(passiveProvider)
-        const whiteListContract = new ethers.Contract(WHITELIST_CONTRACT_ADDRESS, abi, passiveProvider)
-
-        async function getNumAddressesWhitelisted(contract) {
-            try {
-                const tx = await contract.numAddressesWhitelisted()
-                setNumAddressesWhitelisted(tx)
-            } catch (err) {
-                console.log(err)
-            }
-
-        }
-
-        getNumAddressesWhitelisted(whiteListContract)
-
-    }, [addressState])
+        setNumAddressesWhitelisted(_numAddressesWhitelisted)
+    }, [numAddressesWhitelisted])
 
 
 
