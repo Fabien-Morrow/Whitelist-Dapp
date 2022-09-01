@@ -1,4 +1,5 @@
 import React from "react"
+import { useRouter } from 'next/router'
 import { ethers } from "ethers"
 import Web3Modal from "web3modal"
 import { WHITELIST_CONTRACT_ADDRESS, abi } from "../constants"
@@ -8,18 +9,21 @@ import home from "../styles/Home.module.css"
 export async function getServerSideProps() {
     const passiveProvider = new ethers.providers.JsonRpcProvider(process.env.ALCHEMY_API_KEY_URL)
     const whiteListContract = new ethers.Contract(WHITELIST_CONTRACT_ADDRESS, abi, passiveProvider)
-    const _numAddressesWhitelisted = await whiteListContract.numAddressesWhitelisted()
-
-    return { props: { _numAddressesWhitelisted } }
+    const numAddressesWhitelisted = await whiteListContract.numAddressesWhitelisted()
+    return { props: { numAddressesWhitelisted } }
 }
 
 
-export default function Home({ _numAddressesWhitelisted }) {
+export default function Home({ numAddressesWhitelisted }) {
     const [addressState, setAddressState] = React.useState(new Set(["welcome"]))
-    const [numAddressesWhitelisted, setNumAddressesWhitelisted] = React.useState()
-
     const web3ModalRef = React.useRef()
 
+    const router = useRouter();
+
+    // https://www.joshwcomeau.com/nextjs/refreshing-server-side-props/
+    const refreshData = () => {
+        router.replace(router.asPath);
+    }
 
     async function connectWallet(needSigner = false) {
         const instance = await web3ModalRef.current.connect()
@@ -56,6 +60,7 @@ export default function Home({ _numAddressesWhitelisted }) {
                     newState.delete("loading")
                     return newState
                 })
+                refreshData()
             }
 
         } catch (err) {
@@ -91,8 +96,7 @@ export default function Home({ _numAddressesWhitelisted }) {
             disableInjectedProvider: false,
         })
 
-        setNumAddressesWhitelisted(_numAddressesWhitelisted)
-    }, [numAddressesWhitelisted])
+    }, [])
 
 
 
